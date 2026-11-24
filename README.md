@@ -168,6 +168,10 @@ Salve os prints em `docs/prints/` com estes nomes:
 - `docs/prints/print-revarredura-fixed.png` — re-varredura do `app_fixed.py` confirmando mitigação (query fixa com `?`, testes SQLite memória)
 - `docs/prints/print-contexto-ubuntu.png` — cenário `Ubuntu de laboratório exposto`: agente pergunta serviços/contexto antes de sugerir comando
 
+![Análise app.py](docs/prints/print-analise-app.png)
+![Re-varredura fixed](docs/prints/print-revarredura-fixed.png)
+![Contexto Ubuntu](docs/prints/print-contexto-ubuntu.png)
+
 > Todos os testes usam só código e servidores de laboratório próprios (`sqlite :memory:`, dados fictícios). Nada de sistemas reais.
 
 ---
