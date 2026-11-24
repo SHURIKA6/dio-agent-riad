@@ -57,8 +57,15 @@ Fale naturalmente, com as suas palavras. Nas primeiras vezes, vale usar um dos [
 | [Pesquisa na web](skills/web-search/SKILL.md) | Responde dúvidas atuais (versões, lançamentos, mercado) com fontes citadas | "Qual a versão estável do Node hoje?" |
 | [Revisão de portfólio](skills/portfolio-review/SKILL.md) | Dá feedback sobre o seu portfólio e GitHub antes de buscar vagas | "O que falta no meu GitHub para uma vaga júnior?" |
 | [Caminho AI Builder](skills/ai-builder-path/SKILL.md) | Ajuda você a escolher o próximo passo na Carreira AI Builder | "Qual Formação AI Builder combina comigo?" |
+| [Análise de vulnerabilidades](skills/vulnerability-analysis/SKILL.md) | Entende o contexto, avalia impacto/probabilidade/severidade e orienta a correção | "Achei um possível SQL Injection no meu projeto, me ajuda?" |
 
 A pesquisa na web usa a busca do seu harness. Se ele não tiver busca própria, veja [como conectar o You.com](docs/youcom-mcp.md), que tem uma opção gratuita.
+
+### 🛡️ Especialização AppSec
+
+O agente também atua como mentor de segurança de aplicações: antes de sugerir qualquer passo, ele pergunta o contexto (linguagem, onde o app roda, se é seu ambiente de laboratório) e só orienta testes em ambiente próprio.
+
+Toda análise usa um formato fixo — **Impacto / Probabilidade / Severidade** — para você aprender a priorizar correções como um profissional de segurança.
 
 ---
 
@@ -114,18 +121,54 @@ O DIO Agent evolui com o tempo. Se você usou Git, rode `git pull` no terminal, 
 ## 🗂️ Estrutura do repositório
 
 ```
-dio-agent/
-├── README.md                Este guia
+dio-agent-riad/
+├── README.md                Este guia + entrega AppSec
 ├── AGENTS.md                Definição do agente (lida pelo harness)
 ├── CLAUDE.md                Atalho para o Claude Code
+├── app.py                   Lab vulnerável (SQL Injection de propósito)
+├── app_fixed.py             Lab corrigido (query parametrizada)
 ├── agent/
-│   ├── persona.md           A personalidade e o tom do agente
-│   └── knowledge/           O que o agente sabe sobre a DIO
+│   ├── persona.md           Personalidade + Modo AppSec
+│   └── knowledge/           O que o agente sabe
+│       ├── dio-platform.md
+│       ├── learning-experiences.md
+│       └── security-basics.md  Fundamentos: vuln/ameaça/risco, CIA, boas práticas
 ├── skills/                  Uma pasta por skill, cada uma com o seu SKILL.md
+│   └── vulnerability-analysis/
+│       ├── SKILL.md         Roteiro defensivo do agente
+│       └── README.md        Explicação da skill para humanos
 └── docs/
     ├── glossary.md          Glossário de termos
     └── youcom-mcp.md        Como conectar a busca do You.com
 ```
+
+---
+
+## 🛡️ Entrega: especialização AppSec (dio-agent-riad)
+
+### A especialização que dei ao agente, e por quê
+Transformei o DIO Agent num mentor de AppSec que não responde direto: ele pergunta o contexto antes de agir, classifica vulnerabilidade x ameaça x risco, avalia Impacto / Probabilidade / Severidade + CIA, explica a exploração em alto nível com técnica MITRE ATT&CK (sem payload pronto) e orienta a correção de forma socrática. Escolhi AppSec porque é porta de entrada para segurança e treina o pensamento defensivo só com Markdown, sem treinar modelo.
+
+### Quais arquivos criei ou alterei
+- Criados: `skills/vulnerability-analysis/SKILL.md`, `skills/vulnerability-analysis/README.md`, `agent/knowledge/security-basics.md`, `app.py`, `app_fixed.py`
+- Alterados: `agent/persona.md` (+ `## Modo AppSec`), `AGENTS.md` (+ linha na tabela Skills + bullet do knowledge), `README.md` (+ linha na tabela + esta seção)
+
+### Como rodar o agente no harness, e a melhoria que escolhi
+1. `git clone <seu-fork-dio-agent-riad> && cd dio-agent-riad`
+2. Abra o terminal **nesta pasta** e rode `hermes` (se abrir em outro lugar ele não acha os arquivos).
+3. Teste 1: `Tenho um login em app.py que monta SQL com f-string, é lab local. Como especialista AppSec, ache a falha, explique exploração, cite MITRE ATT&CK e oriente a correção.` → deve perguntar contexto, classificar, dar Severidade e guiar até query parametrizada.
+4. Teste 2: troque por `app_fixed.py` e peça re-varredura → deve confirmar mitigação.
+5. Teste 3: `Tenho um Ubuntu de laboratório exposto na internet` → deve perguntar versão/serviços/rede antes de sugerir qualquer comando.
+- Melhoria escolhida: **formato fixo de saída** em toda análise (`Contexto / Classificação / Avaliação Impacto-Prob-Severidade + CIA / Exploração alto nível + MITRE / Correção guiada / Validação / Entendimento`) para comparar casos. Ideias futuras: skill de trilha de estudos, skill de testes de segurança, review DevSecOps por diff.
+
+### Evidências (prints)
+Salve os prints em `docs/prints/` com estes nomes:
+
+- `docs/prints/print-analise-app.png` — análise do `app.py`: CWE-89, T1190, Impacto/Prob/Severidade + orientação para `app_fixed.py`
+- `docs/prints/print-revarredura-fixed.png` — re-varredura do `app_fixed.py` confirmando mitigação (query fixa com `?`, testes SQLite memória)
+- `docs/prints/print-contexto-ubuntu.png` — cenário `Ubuntu de laboratório exposto`: agente pergunta serviços/contexto antes de sugerir comando
+
+> Todos os testes usam só código e servidores de laboratório próprios (`sqlite :memory:`, dados fictícios). Nada de sistemas reais.
 
 ---
 
